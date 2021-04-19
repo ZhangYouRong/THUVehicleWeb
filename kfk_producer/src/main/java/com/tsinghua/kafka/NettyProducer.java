@@ -28,9 +28,10 @@ public class NettyProducer
 
         for (int i = 0; i < 100; i++)
         {
-            String data= Integer.toString(i)+"'张有容','123456','男','教师','www.bbk.com','XX大学','2016-08-12 14:43:26','备注'";
+            String data= i+",'张有容','123456','男','教师','www.bbk.com','XX大学','2016-08-12 14:43:26','备注'";
             producer.send(new ProducerRecord<String, String>("test", Integer.toString(i), data));
         }
+        System.out.println("成功发送100条消息至kafka，生产者关闭");
         producer.close();
     }
 }

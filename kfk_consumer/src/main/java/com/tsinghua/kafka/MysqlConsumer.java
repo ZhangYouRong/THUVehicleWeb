@@ -142,16 +142,55 @@ public class MysqlConsumer
     {
         consumer = new KafkaConsumer<>(props);
         consumer.subscribe(Arrays.asList(topic));
-        while (true)
+        String insert_table="tb_teacher";
+        boolean receive_message=true;
+
+        try
         {
-            ConsumerRecords<String, String> records = consumer.poll(100);
-            for (ConsumerRecord<String, String> record : records)
-                System.out.printf("offset = %d, key = %s, value = %s%n", record.offset(), record.key(), record.value());
+            // 设置事务为非自动提交
+            conn.setAutoCommit(false);
+            // 比起st，pst会更好些
+            PreparedStatement pst = (PreparedStatement) conn.prepareStatement(" ");//准备执行语句
+
+            while (receive_message)
+            {
+                ConsumerRecords<String, String> records = consumer.poll(100);
+                String prefix = "INSERT INTO " + insert_table + " (id,t_name,t_password,sex,description,pic_url,school_name,regist_date,remark) VALUES ";
+                int counter = 0;
+                StringBuffer suffix = new StringBuffer();
+                for (ConsumerRecord<String, String> record : records) {
+                    suffix.append("(").append(record.value()).append("),");
+                    counter++;
+                    System.out.printf("key = %s, value = %s%n", record.key(), record.value());
+                }
+
+                if (counter != 0) //有新数据被拉取
+                {
+                    // 构建完整SQL
+                    String sql = prefix + suffix.substring(0, suffix.length() - 1);
+                    // 添加执行SQL
+                    pst.addBatch(sql);
+                    // 执行操作
+                    pst.executeBatch();
+                    // 提交事务
+                    conn.commit();
+                    System.out.printf("%d items insert into table %s ",counter, insert_table);
+//                System.out.printf("offset = %d, key = %s, value = %s%n", record.offset(), record.key(), record.value());
+                }
+            }
+            // 头等连接
+            pst.close();
+            conn.close();
         }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
+
+
     }
 
-    public void CloseConsumer()
-    {
+    public void CloseConsumer()  {
         consumer.close();
     }
 }
