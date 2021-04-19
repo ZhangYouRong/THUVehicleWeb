@@ -6,7 +6,7 @@ import java.sql.*;
 import java.util.Arrays;
 import java.util.Properties;
 import java.util.Date;
-import java.util.UUID;
+
 
 
 public class MysqlConsumer
