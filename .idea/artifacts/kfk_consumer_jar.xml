@@ -1,0 +1,18 @@
+<component name="ArtifactManager">
+  <artifact build-on-make="true" name="kfk-consumer:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/kfk_consumer_jar</output-path>
+    <root id="root">
+      <element id="archive" name="kfk-consumer.jar">
+        <element id="module-output" name="kfk-consumer" />
+      </element>
+      <element id="directory" name="lib">
+        <element id="library" level="project" name="Maven: com.google.protobuf:protobuf-java:3.11.4" />
+        <element id="library" level="project" name="Maven: mysql:mysql-connector-java:8.0.23" />
+        <element id="library" level="project" name="Maven: org.apache.kafka:kafka-clients:1.0.0" />
+        <element id="library" level="project" name="Maven: org.lz4:lz4-java:1.4" />
+        <element id="library" level="project" name="Maven: org.slf4j:slf4j-api:1.7.25" />
+        <element id="library" level="project" name="Maven: org.xerial.snappy:snappy-java:1.1.4" />
+      </element>
+    </root>
+  </artifact>
+</component>

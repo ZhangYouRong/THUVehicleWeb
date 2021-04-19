@@ -1,0 +1,19 @@
+<component name="ArtifactManager">
+  <artifact build-on-make="true" name="kfk_producer:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/kfk_producer_jar</output-path>
+    <root id="root">
+      <element id="archive" name="kfk_producer.jar">
+        <element id="directory" name="META-INF">
+          <element id="file-copy" path="$PROJECT_DIR$/kfk_producer/src/main/resources/META-INF/MANIFEST.MF" />
+        </element>
+        <element id="module-output" name="kfk_producer" />
+      </element>
+      <element id="directory" name="lib">
+        <element id="library" level="project" name="Maven: org.apache.kafka:kafka-clients:1.0.0" />
+        <element id="library" level="project" name="Maven: org.lz4:lz4-java:1.4" />
+        <element id="library" level="project" name="Maven: org.slf4j:slf4j-api:1.7.25" />
+        <element id="library" level="project" name="Maven: org.xerial.snappy:snappy-java:1.1.4" />
+      </element>
+    </root>
+  </artifact>
+</component>
