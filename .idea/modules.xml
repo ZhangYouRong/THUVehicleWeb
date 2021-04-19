@@ -3,7 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/kafka.iml" filepath="$PROJECT_DIR$/kafka.iml" />
-      <module fileurl="file://$PROJECT_DIR$/kfk-consumer/kfk-consumer.iml" filepath="$PROJECT_DIR$/kfk-consumer/kfk-consumer.iml" />
+      <module fileurl="file://$PROJECT_DIR$/kfk_consumer/kfk_consumer.iml" filepath="$PROJECT_DIR$/kfk_consumer/kfk_consumer.iml" />
       <module fileurl="file://$PROJECT_DIR$/kfk_producer/kfk_producer.iml" filepath="$PROJECT_DIR$/kfk_producer/kfk_producer.iml" />
     </modules>
   </component>

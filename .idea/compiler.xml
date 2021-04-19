@@ -6,13 +6,13 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="kfk-consumer" />
         <module name="kfk_producer" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="kafka-demo" target="8" />
       <module name="kfk-consumer" target="8" />
+      <module name="kfk_consumer" target="8" />
       <module name="kfk_producer" target="8" />
     </bytecodeTargetLevel>
   </component>

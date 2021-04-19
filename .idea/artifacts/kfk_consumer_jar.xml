@@ -1,9 +1,9 @@
 <component name="ArtifactManager">
-  <artifact build-on-make="true" name="kfk-consumer:jar">
+  <artifact build-on-make="true" name="kfk_consumer:jar">
     <output-path>$PROJECT_DIR$/out/artifacts/kfk_consumer_jar</output-path>
     <root id="root">
       <element id="archive" name="kfk-consumer.jar">
-        <element id="module-output" name="kfk-consumer" />
+        <element id="module-output" name="kfk_consumer" />
       </element>
       <element id="directory" name="lib">
         <element id="library" level="project" name="Maven: com.google.protobuf:protobuf-java:3.11.4" />
