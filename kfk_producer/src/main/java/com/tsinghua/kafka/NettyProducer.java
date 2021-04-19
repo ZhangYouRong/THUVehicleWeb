@@ -26,7 +26,8 @@ public class NettyProducer
 
         for (int i = 0; i < 100; i++)
         {
-            producer.send(new ProducerRecord<String, String>("test", Integer.toString(i), Integer.toString(i)));
+            String data="id"+i;
+            producer.send(new ProducerRecord<String, String>("test", Integer.toString(i),data));
         }
         producer.close();
     }
