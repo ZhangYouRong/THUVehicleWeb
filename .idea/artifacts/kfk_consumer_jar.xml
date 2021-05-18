@@ -10,8 +10,8 @@
         <element id="library" level="project" name="Maven: mysql:mysql-connector-java:8.0.23" />
         <element id="library" level="project" name="Maven: org.apache.kafka:kafka-clients:1.0.0" />
         <element id="library" level="project" name="Maven: org.lz4:lz4-java:1.4" />
-        <element id="library" level="project" name="Maven: org.slf4j:slf4j-api:1.7.25" />
         <element id="library" level="project" name="Maven: org.xerial.snappy:snappy-java:1.1.4" />
+        <element id="library" level="project" name="Maven: org.slf4j:slf4j-api:1.7.25" />
       </element>
     </root>
   </artifact>

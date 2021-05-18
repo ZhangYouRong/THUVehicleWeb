@@ -5,6 +5,8 @@
       <list>
         <option value="$PROJECT_DIR$/kfk_producer/pom.xml" />
         <option value="$PROJECT_DIR$/kfk-consumer/pom.xml" />
+        <option value="$PROJECT_DIR$/kfk_consumer/pom.xml" />
+        <option value="$PROJECT_DIR$/client/pom.xml" />
       </list>
     </option>
   </component>

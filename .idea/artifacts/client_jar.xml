@@ -1,0 +1,13 @@
+<component name="ArtifactManager">
+  <artifact build-on-make="true" name="client:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/client_jar</output-path>
+    <root id="root">
+      <element id="archive" name="client.jar">
+        <element id="module-output" name="client" />
+      </element>
+      <element id="directory" name="lib">
+        <element id="library" level="project" name="Maven: io.netty:netty-all:4.1.60.Final" />
+      </element>
+    </root>
+  </artifact>
+</component>

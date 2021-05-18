@@ -6,7 +6,6 @@ public class main
     {
         MysqlConsumer MC = new MysqlConsumer("node1:9092");
         MC.MysqlDBConnect("zhangyr");
-//        测试从kafka拉去数据并入库
         while(true)
         {
             MC.GetMessage("test");
