@@ -1,5 +1,5 @@
 Manifest-Version: 1.0
 Main-Class: com.tsinghua.kafka.NettyServer
-Class-Path: lib/snappy-java-1.1.4.jar lib/kafka-clients-1.0.0.jar lib/lz
- 4-java-1.4.jar lib/slf4j-api-1.7.30 lib/netty-all-4.1.60.Final.jar
+Class-Path: lib/slf4j-api-1.7.25.jar lib/kafka-clients-1.0.0.jar lib/sna
+ ppy-java-1.1.4.jar lib/lz4-java-1.4.jar lib/netty-all-4.1.60.Final.jar
 
