@@ -1,5 +1,8 @@
 package com.tsinghua.client;
 
+import com.csvreader.CsvReader;
+
+import java.io.IOException;
 import java.nio.ByteBuffer;
 
 public class PackageBuilder {
@@ -29,7 +32,7 @@ public class PackageBuilder {
     public static byte gpsFault = 0;
     public static byte isInDesignatedArea = 1;
     public static byte networkStatus = 0;
-    public static short LENGTH = 36;
+    public static short LENGTH = 46;
     //CID_DS
     public static short distanceFromFront = 0;
     public static short speedOfFront = 0;
@@ -47,18 +50,17 @@ public class PackageBuilder {
         return pb;
     }
 
-    public byte[] getPackage(int sn, short cm, long lat, long lng,
-                             short ca, short gs, short alt, short pa, byte gq, byte gf,
+    public byte[] getPackage(int sn, long ctm, short cm, double lat, double lng,
+                             float ca, float gs, short alt, short pa, byte gq, byte gf,
                              byte iida, byte ns) {
         ByteBuffer info = ByteBuffer.allocate(LENGTH);
         info.putInt(sn);
-        info.putLong(0L);
-//		info.putLong(System.currentTimeMillis());
+        info.putLong(ctm);
         info.putShort(cm);
-        info.put(latiBytes);
-        info.put(longBytes);
-        info.putShort(ca);
-        info.putShort(gs);
+        info.putDouble(lat);
+        info.putDouble(lng);
+        info.putFloat(ca);
+        info.putFloat(gs);
         info.putShort(alt);
         info.putShort(pa);
         System.out.println(info.position());
@@ -68,7 +70,7 @@ public class PackageBuilder {
         info.put(ns);
         System.out.println(info.position());
 
-        ByteBuffer pkg = ByteBuffer.allocate(46);
+        ByteBuffer pkg = ByteBuffer.allocate(56);
         pkg.put(SOI);
         pkg.put(GID);
         pkg.put(ADDR);

@@ -1,4 +1,4 @@
 Manifest-Version: 1.0
 Main-Class: com.tsinghua.client.Client
-Class-Path: lib/netty-all-4.1.60.Final.jar
+Class-Path: lib/netty-all-4.1.60.Final.jar lib/javacsv-2.0.jar
 

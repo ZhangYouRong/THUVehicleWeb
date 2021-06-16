@@ -1,16 +1,16 @@
 package com.tsinghua.kafka;
 
-import org.apache.kafka.clients.producer.KafkaProducer;
-import org.apache.kafka.clients.producer.Producer;
-import org.apache.kafka.clients.producer.ProducerRecord;
-import java.util.Properties;
-import java.util.concurrent.ExecutionException;
-
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.util.Properties;
+
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufUtil;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
+import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.clients.producer.Producer;
+import org.apache.kafka.clients.producer.ProducerRecord;
 
 public class DemoDecoder extends LengthFieldBasedFrameDecoder{
     public final static String tag = "DemoDecoder";
@@ -20,7 +20,6 @@ public class DemoDecoder extends LengthFieldBasedFrameDecoder{
     public final static int LENGTH_FIELD_LENGTH = 2;	//
     //
     public final static int CHECK_SUM_LENGTH = 1;		//
-
 
     public DemoDecoder() throws IOException {
         super(MAX_FRAME_LENGTH, LENGTH_FIELD_OFFSET, LENGTH_FIELD_LENGTH, CHECK_SUM_LENGTH, 0);
@@ -41,6 +40,16 @@ public class DemoDecoder extends LengthFieldBasedFrameDecoder{
             return null;
         }
         ByteBuf all = bb.readBytes(bb.readableBytes());
+
+        // convert netty.ByteBuf to nio.byteBuffer
+        int numReadBytes = all.readableBytes();
+        System.out.println(numReadBytes);
+        byte [] conBytes = new byte[numReadBytes];
+        all.readBytes(conBytes);
+        ByteBuffer conByteBuffer = ByteBuffer.allocate(conBytes.length);
+        conByteBuffer.put(conBytes);
+
+        all.resetReaderIndex();
         int len = all.readableBytes();	//获取消息长度
         Logger.d(tag, "[MessageSize]" + len);
         all.readInt();						//跳过SOI
@@ -60,21 +69,13 @@ public class DemoDecoder extends LengthFieldBasedFrameDecoder{
         props.put("linger.ms", 1);
         props.put("buffer.memory", 33554432);
         props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
-        props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
-        Producer<String, String> producer = new KafkaProducer<>(props);
+        props.put("value.serializer", "org.apache.kafka.common.serialization.ByteBufferSerializer");
 
-//        for (int i = 0; i < 100; i++)
-//        {
-//            System.out.println("Loop ");
-//            String data= i+",'张有容','123456','男','教师','www.bbk.com','XX大学','2016-08-12 14:43:26','备注'";
-//            producer.send(new ProducerRecord<String, String>("test", Integer.toString(i), data));
-//        }
-        String data= sn+",'张有容','123456','男','教师','www.bbk.com','XX大学','2016-08-12 14:43:26','备注'";
-        producer.send(new ProducerRecord<String, String>("test", Integer.toString(sn), data));
-
-        System.out.println("成功发送1条消息");
+        Producer<String, ByteBuffer> producer = new KafkaProducer<>(props);
+        producer.send(new ProducerRecord<>("test", "0", conByteBuffer));
 
         producer.close();
+
         return null;
     }
 
@@ -107,3 +108,4 @@ public class DemoDecoder extends LengthFieldBasedFrameDecoder{
         return sb.toString();
     }
 }
+

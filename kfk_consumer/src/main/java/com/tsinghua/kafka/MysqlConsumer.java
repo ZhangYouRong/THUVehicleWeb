@@ -1,6 +1,8 @@
 package com.tsinghua.kafka;
 
 import org.apache.kafka.clients.consumer.*;
+
+import java.nio.ByteBuffer;
 import java.sql.*;
 
 import java.util.Arrays;
@@ -13,7 +15,7 @@ public class MysqlConsumer
 {
     //kafka initialization
     private static Properties props = new Properties();
-    private KafkaConsumer<String, String> consumer;
+    private KafkaConsumer<String, ByteBuffer> consumer;
     //mysql initialization
     static final String driverName = "com.mysql.cj.jdbc.Driver";
     static final String userName = "root";
@@ -22,6 +24,8 @@ public class MysqlConsumer
     static String dbURL= null;
     static final String dbURL_pre = "jdbc:mysql://localhost:3306/";
     static final String dbURL_suf = "?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC";
+
+    static final int mysql_insert_unit=100;
 
     Connection conn=null;
 
@@ -32,7 +36,7 @@ public class MysqlConsumer
         props.put("enable.auto.commit", "true");
         props.put("auto.commit.interval.ms", "1000");
         props.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
-        props.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
+        props.put("value.deserializer", "org.apache.kafka.common.serialization.ByteBufferDeserializer");
     }
 
     public boolean MysqlDBConnect(String database)
@@ -55,6 +59,7 @@ public class MysqlConsumer
         }
     }
 
+    //在mysql里面创建一个新的表格
     public void TableCreate(String table_name)
     {
         //VARCHAR(1)代表一个汉字or一个英文字母
@@ -88,61 +93,27 @@ public class MysqlConsumer
 
     }
 
-    public void Insert(String table_name)
-        {
-        // 开始时间
-        Long begin = new Date().getTime();
-        TableCreate(table_name);
-        // sql前缀
-        String prefix = "INSERT INTO "+table_name+" (id,t_name,t_password,sex,description,pic_url,school_name,regist_date,remark) VALUES ";
-        try {
-            // 保存sql后缀
-            StringBuffer suffix = new StringBuffer();
-            // 设置事务为非自动提交
-            conn.setAutoCommit(false);
-            // 比起st，pst会更好些
-            PreparedStatement  pst = (PreparedStatement) conn.prepareStatement(" ");//准备执行语句
-            // 外层循环，总提交事务次数
-            for (int i = 1; i <= 100; i++) {
-                suffix = new StringBuffer();
-                // 第j次提交步长
-                for (int j = 1; j <= 10000; j++) {
-                    // 构建SQL后缀
-                    suffix.append("('").append(i*10000+j).append("',") .append("'张有容','123456','男','教师','www.bbk.com','XX大学','2016-08-12 14:43:26','备注'),");
-
-//                    suffix.append("('").append(UUID.randomUUID().toString()).append("','") .append(i*j).append("','123456','男','教师','www.bbk.com','XX大学','2016-08-12 14:43:26','备注'),");
-                }
-                // 构建完整SQL
-                String sql = prefix + suffix.substring(0, suffix.length() - 1);
-                // 添加执行SQL
-                pst.addBatch(sql);
-                // 执行操作
-                pst.executeBatch();
-                // 提交事务
-                conn.commit();
-                Long now = new Date().getTime();
-                //System.out.println(i+" :"+(float)(now - begin) / 1000);
-                // 清空上一次添加的数据
-                suffix = new StringBuffer();
-            }
-            // 头等连接
-            pst.close();
-            conn.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
+    public String bytesToHexString(byte[] bs) {		//byte数组转16进制字符串
+        if (bs == null) {
+            return null;
         }
-        // 结束时间
-        Long end = new Date().getTime();
-        // 耗时
-        System.out.println("100万条数据插入花费时间 : " + (float)(end - begin) / 1000 + " s");
-        System.out.println("插入完成");
+        StringBuffer sb = new StringBuffer(bs.length);
+        String s;
+        for (int i = 0; i < bs.length; i++) {
+            s = Integer.toHexString(0xFF & bs[i]);
+            if (s.length() < 2)
+                sb.append(0);
+            sb.append(s);
+            sb.append(" ");
+        }
+        return sb.toString();
     }
 
     public void GetMessage(String topic)
     {
         consumer = new KafkaConsumer<>(props);
         consumer.subscribe(Arrays.asList(topic));
-        String insert_table="tb_teacher";
+        String insert_table="tb_D00869D_20210501";
         boolean receive_message=true;
 
         try
@@ -154,14 +125,47 @@ public class MysqlConsumer
 
             while (receive_message)
             {
-                ConsumerRecords<String, String> records = consumer.poll(100);
-                String prefix = "INSERT INTO " + insert_table + " (id,t_name,t_password,sex,description,pic_url,school_name,regist_date,remark) VALUES ";
+                ConsumerRecords<String, ByteBuffer> records = consumer.poll(100);
+                String prefix = "INSERT INTO " + insert_table + " (sn,ctm,cm,lat,lng,ca,gs,alt,pa) VALUES ";
                 int counter = 0;
                 StringBuffer suffix = new StringBuffer();
-                for (ConsumerRecord<String, String> record : records) {
-                    suffix.append("(").append(record.value()).append("),");
+
+                for (ConsumerRecord<String, ByteBuffer> record : records) {
                     counter++;
-                    System.out.printf("key = %s, value = %s%n", record.key(), record.value());
+                    byte [] SOI = new byte[4];
+                    record.value().get(SOI);
+
+                    byte GID = record.value().get();
+                    byte ADDR = record.value().get();
+                    byte CID_RTD = record.value().get();
+                    short LENGTH = record.value().getShort();
+                    int sn = record.value().getInt();
+                    long ctm =  record.value().getLong();
+                    short cm =  record.value().getShort();
+                    double lat =  record.value().getDouble();
+                    double lng = record.value().getDouble();
+                    float ca = record.value().getFloat();
+                    float gs = record.value().getFloat();
+                    short alt = record.value().getShort();
+                    short pa = record.value().getShort();
+
+                    //转换为StringBuffer(sql语法)
+                    suffix.append("('").
+                            append(sn).append("','").
+                            append(ctm).append("','").
+                            append(cm).append("','").
+                            append(lat).append("','").
+                            append(lng).append("','").
+                            append(ca).append("','").
+                            append(gs).append("','").
+                            append(alt).append("','").
+                            append(pa).append("'").      //注意：最后这个没有逗号
+                            append("),");
+
+                    //每若干条数据打断并输入数据库一次
+                    if (counter>mysql_insert_unit)
+                        break;
+
                 }
 
                 if (counter != 0) //有新数据被拉取
@@ -174,8 +178,7 @@ public class MysqlConsumer
                     pst.executeBatch();
                     // 提交事务
                     conn.commit();
-                    System.out.printf("%d items insert into table %s ",counter, insert_table);
-//                System.out.printf("offset = %d, key = %s, value = %s%n", record.offset(), record.key(), record.value());
+                    System.out.printf("%d items insert into table %s%n",counter, insert_table);
                 }
             }
             // 头等连接
